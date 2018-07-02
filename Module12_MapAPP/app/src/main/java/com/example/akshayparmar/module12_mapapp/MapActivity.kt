@@ -49,24 +49,6 @@ import kotlin.math.log
 
 class MapActivity: AppCompatActivity(), OnMapReadyCallback, PlaceSelectionListener,GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnMarkerClickListener{
-    override fun onMarkerClick(marker: Marker?): Boolean {
-        Log.d(TAG, "onMarkerCLick is clicked")
-        showRouteToDestination(currentLocation, destinationLocation)
-        return true
-    }
-
-    override fun onConnectionFailed(p0: ConnectionResult) {
-       Log.e(TAG, "onConnectionFailed : Connection Failed occured...")
-    }
-
-    override fun onPlaceSelected(place: Place?) {
-        Log.d(TAG, "Place selected..")
-        moveCamera(LatLng(place?.latLng?.latitude!!, place.latLng.longitude), DEFAULT_ZOOM, place.address.toString())
-    }
-
-    override fun onError(status: Status?) {
-        Log.i(TAG, "An error occurred: " + status)
-    }
 
     //Variables
     val TAG:String = "MapActivity"
@@ -84,6 +66,30 @@ class MapActivity: AppCompatActivity(), OnMapReadyCallback, PlaceSelectionListen
     //Widgets
     lateinit var mGps:ImageView
     lateinit var mchangemap:Button
+
+
+
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        Log.d(TAG, "onMarkerCLick is clicked")
+        showRouteToDestination(currentLocation, destinationLocation)
+        return true
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+       Log.e(TAG, "onConnectionFailed : Connection Failed occured...")
+    }
+
+    override fun onPlaceSelected(place: Place?) {
+        Log.d(TAG, "Place selected..")
+        moveCamera(LatLng(place?.latLng?.latitude!!, place.latLng.longitude), DEFAULT_ZOOM, place.address.toString())
+        destinationLocation = place.latLng
+    }
+
+    override fun onError(status: Status?) {
+        Log.i(TAG, "An error occurred: " + status)
+    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -197,6 +203,7 @@ class MapActivity: AppCompatActivity(), OnMapReadyCallback, PlaceSelectionListen
         var mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
         mapFragment.getMapAsync(this@MapActivity)
+
     }
 
     fun getDeviceLocation(){
@@ -210,7 +217,7 @@ class MapActivity: AppCompatActivity(), OnMapReadyCallback, PlaceSelectionListen
                 location.addOnCompleteListener{
                      if (it.isSuccessful){
                          Log.d(TAG, "getDeviceLocation: Found Location")
-                         var currentLocation = it.result as Location
+                         currentLocation = it.result as Location
                          //currentLocation = it.result
                          moveCamera(LatLng(currentLocation.latitude, currentLocation.longitude), DEFAULT_ZOOM,"My Location")
                      }else{
